@@ -3,126 +3,147 @@ window.WORK = {
  "art": [
   {
    "src": "art/art-01.jpg",
+   "thumb": "thumbs/art/art-01.jpg",
    "w": 1400,
    "h": 1400,
    "caption": "marker drawing on a square card: a figure in sunglasses adjusting their cuffs, pink accents"
   },
   {
    "src": "art/art-02.jpg",
+   "thumb": "thumbs/art/art-02.jpg",
    "w": 1120,
    "h": 1400,
    "caption": "sketchbook page in pencil: a man reading “En Avant!” and soccer tackle studies"
   },
   {
    "src": "art/art-03.jpg",
+   "thumb": "thumbs/art/art-03.jpg",
    "w": 1126,
    "h": 1400,
    "caption": "collage: a figure in striped coveralls with a vulture’s head"
   },
   {
    "src": "art/art-04.jpg",
+   "thumb": "thumbs/art/art-04.jpg",
    "w": 1140,
    "h": 1400,
    "caption": "oil study of a torso, hands folded"
   },
   {
    "src": "art/art-05.jpg",
+   "thumb": "thumbs/art/art-05.jpg",
    "w": 1120,
    "h": 1400,
    "caption": "ink and wash: layered faces and abstract black marks"
   },
   {
    "src": "art/art-06.jpg",
+   "thumb": "thumbs/art/art-06.jpg",
    "w": 1050,
    "h": 1400,
    "caption": "sketchbook spread: watercolor shapes with hatched shading, paint set alongside"
   },
   {
    "src": "art/art-07.jpg",
+   "thumb": "thumbs/art/art-07.jpg",
    "w": 1120,
    "h": 1400,
    "caption": "watercolor portrait of a weathered face"
   },
   {
    "src": "art/art-08.jpg",
+   "thumb": "thumbs/art/art-08.jpg",
    "w": 1050,
    "h": 1400,
    "caption": "yellow figures walking into red perspective lines on blue"
   },
   {
    "src": "art/art-09.jpg",
+   "thumb": "thumbs/art/art-09.jpg",
    "w": 1050,
    "h": 1400,
    "caption": "colored pencil study of a worn train seat"
   },
   {
    "src": "art/art-10.jpg",
+   "thumb": "thumbs/art/art-10.jpg",
    "w": 1400,
    "h": 992,
    "caption": "collage: an electricity pylon against red and yellow fields"
   },
   {
    "src": "art/art-11.jpg",
+   "thumb": "thumbs/art/art-11.jpg",
    "w": 918,
    "h": 1400,
    "caption": "gouache portrait of a boy on a blue ground"
   },
   {
    "src": "art/art-12.jpg",
+   "thumb": "thumbs/art/art-12.jpg",
    "w": 1058,
    "h": 1400,
    "caption": "mixed media: a figure floating in swirling water"
   },
   {
    "src": "art/art-13.jpg",
+   "thumb": "thumbs/art/art-13.jpg",
    "w": 1400,
    "h": 1146,
    "caption": "colored pencil: a figure reclining in a hammock, seen from above"
   },
   {
    "src": "art/art-14.jpg",
+   "thumb": "thumbs/art/art-14.jpg",
    "w": 1400,
    "h": 1132,
    "caption": "dark green abstract painting with pale fish-like forms"
   },
   {
    "src": "art/art-15.jpg",
+   "thumb": "thumbs/art/art-15.jpg",
    "w": 1050,
    "h": 1400,
    "caption": "red monochrome painting: a screaming face, hands pressed to cheeks"
   },
   {
    "src": "art/art-16.jpg",
+   "thumb": "thumbs/art/art-16.jpg",
    "w": 1050,
    "h": 1400,
    "caption": "pencil sketchbook page: a man on the phone and a pitcher of flowers"
   },
   {
    "src": "art/art-17.jpg",
+   "thumb": "thumbs/art/art-17.jpg",
    "w": 1400,
    "h": 1396,
    "caption": "pencil drawing: a man in a cap sitting on a bench, head bowed"
   },
   {
    "src": "art/art-18.jpg",
+   "thumb": "thumbs/art/art-18.jpg",
    "w": 1050,
    "h": 1400,
    "caption": "pencil drawing on letterhead: a cowboy-hatted figure hugging a pillow"
   },
   {
    "src": "art/art-19.jpg",
+   "thumb": "thumbs/art/art-19.jpg",
    "w": 1050,
    "h": 1400,
    "caption": "gouache: a runner cresting a sunlit dune ridge"
   },
   {
    "src": "art/art-20.jpg",
+   "thumb": "thumbs/art/art-20.jpg",
    "w": 1050,
    "h": 1400,
    "caption": "pencil and wash: a composition of four faces"
   },
   {
    "src": "art/art-21.jpg",
+   "thumb": "thumbs/art/art-21.jpg",
    "w": 1400,
    "h": 787,
    "caption": "thick impasto oil portrait in many colors on black"
@@ -131,252 +152,273 @@ window.WORK = {
  "photography": [
   {
    "src": "photography/ph-01.jpg",
+   "thumb": "thumbs/photography/ph-01.jpg",
    "w": 1600,
    "h": 1060,
    "caption": "two friends in dappled light by a forest creek"
   },
   {
    "src": "photography/ph-02.jpg",
+   "thumb": "thumbs/photography/ph-02.jpg",
    "w": 1600,
    "h": 1087,
    "caption": "a farmer walking through a green valley of crops below limestone hills"
   },
   {
    "src": "photography/ph-03.jpg",
+   "thumb": "thumbs/photography/ph-03.jpg",
    "w": 1600,
    "h": 1188,
    "caption": "a green-lit hotel room, people asleep on two beds"
   },
   {
    "src": "photography/ph-04.jpg",
+   "thumb": "thumbs/photography/ph-04.jpg",
    "w": 1600,
    "h": 1087,
    "caption": "fishing boats moored in a harbor under white clouds"
   },
   {
    "src": "photography/ph-05.jpg",
+   "thumb": "thumbs/photography/ph-05.jpg",
    "w": 1600,
    "h": 1087,
    "caption": "a woman sitting on a bed beside a bright window and an old fan"
   },
   {
    "src": "photography/ph-06.jpg",
+   "thumb": "thumbs/photography/ph-06.jpg",
    "w": 1600,
    "h": 1087,
    "caption": "seabirds taking off over a beach against dark trees"
   },
   {
    "src": "photography/ph-07.jpg",
+   "thumb": "thumbs/photography/ph-07.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "an old RV trailer parked below red desert hills"
   },
   {
    "src": "photography/ph-08.jpg",
+   "thumb": "thumbs/photography/ph-08.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "self-portrait reflected in a scratched window, film camera in hand"
   },
   {
    "src": "photography/ph-09.jpg",
+   "thumb": "thumbs/photography/ph-09.jpg",
    "w": 1600,
    "h": 1064,
    "caption": "marathon runners coming down a sunlit road"
   },
   {
    "src": "photography/ph-10.jpg",
+   "thumb": "thumbs/photography/ph-10.jpg",
    "w": 1600,
    "h": 1205,
    "caption": "a car trunk packed with bags and a guitar case"
   },
   {
    "src": "photography/ph-11.jpg",
+   "thumb": "thumbs/photography/ph-11.jpg",
    "w": 1600,
    "h": 1069,
    "caption": "a runner crossing a marathon timing strip"
   },
   {
    "src": "photography/ph-12.jpg",
+   "thumb": "thumbs/photography/ph-12.jpg",
    "w": 1134,
    "h": 1600,
    "caption": "two people talking in a narrow Venetian street"
   },
   {
    "src": "photography/ph-13.jpg",
+   "thumb": "thumbs/photography/ph-13.jpg",
    "w": 1600,
    "h": 1075,
    "caption": "a desk lamp glowing warm, film burn on the edge of the frame"
   },
   {
    "src": "photography/ph-14.jpg",
+   "thumb": "thumbs/photography/ph-14.jpg",
    "w": 1600,
    "h": 1075,
    "caption": "friends sitting on fallen logs in a canyon clearing"
   },
   {
    "src": "photography/ph-15.jpg",
+   "thumb": "thumbs/photography/ph-15.jpg",
    "w": 1600,
    "h": 1075,
    "caption": "someone lying in the sand on a hazy crowded beach"
   },
   {
    "src": "photography/ph-16.jpg",
+   "thumb": "thumbs/photography/ph-16.jpg",
    "w": 1075,
    "h": 1600,
    "caption": "a sunbather on a striped towel, photographed from above"
   },
   {
    "src": "photography/ph-17.jpg",
+   "thumb": "thumbs/photography/ph-17.jpg",
    "w": 1600,
    "h": 1075,
    "caption": "a Los Angeles intersection, figures crossing"
   },
   {
    "src": "photography/ph-18.jpg",
+   "thumb": "thumbs/photography/ph-18.jpg",
    "w": 1600,
    "h": 1075,
    "caption": "a palm-lined street seen through a windshield"
   },
   {
    "src": "photography/ph-19.jpg",
+   "thumb": "thumbs/photography/ph-19.jpg",
    "w": 1600,
    "h": 1080,
    "caption": "playing guitar in a white alcove, a turntable on the shelf"
   },
   {
    "src": "photography/ph-20.jpg",
+   "thumb": "thumbs/photography/ph-20.jpg",
    "w": 1200,
    "h": 1600,
    "caption": "friends playing guitars in a sunlit room full of plants"
   },
   {
-   "src": "photography/ph-21.jpg",
-   "w": 1200,
-   "h": 1600,
-   "caption": "a succulent up close, pastel leaves"
-  },
-  {
-   "src": "photography/ph-22.jpg",
-   "w": 1600,
-   "h": 1200,
-   "caption": "pink mammatus clouds at sunset"
-  },
-  {
    "src": "photography/ph-23.jpg",
+   "thumb": "thumbs/photography/ph-23.jpg",
    "w": 1600,
    "h": 900,
    "caption": "a man sitting outside a green-trimmed house"
   },
   {
-   "src": "photography/ph-24.jpg",
-   "w": 1200,
-   "h": 1600,
-   "caption": "looking down at shoes on patterned tiles"
-  },
-  {
    "src": "photography/ph-25.jpg",
+   "thumb": "thumbs/photography/ph-25.jpg",
    "w": 1200,
    "h": 1600,
    "caption": "flat lay: camera, e-reader, watch, field notes, coffee"
   },
   {
    "src": "photography/ph-26.jpg",
+   "thumb": "thumbs/photography/ph-26.jpg",
    "w": 1200,
    "h": 1600,
    "caption": "a laptop and guitar on an unmade bed"
   },
   {
    "src": "photography/ph-27.jpg",
+   "thumb": "thumbs/photography/ph-27.jpg",
    "w": 1600,
    "h": 1075,
    "caption": "night flash portrait on a bench above city lights"
   },
   {
    "src": "photography/ph-28.jpg",
+   "thumb": "thumbs/photography/ph-28.jpg",
    "w": 1600,
    "h": 1066,
    "caption": "a tent pitched on a ridge at dusk, fog over the ocean"
   },
   {
    "src": "photography/ph-29.jpg",
+   "thumb": "thumbs/photography/ph-29.jpg",
    "w": 1600,
    "h": 1066,
    "caption": "a handstand next to a tent on a bluff over the sea"
   },
   {
    "src": "photography/ph-30.jpg",
+   "thumb": "thumbs/photography/ph-30.jpg",
    "w": 1200,
    "h": 1600,
    "caption": "friends descending a cliff above a glittering ocean"
   },
   {
    "src": "photography/ph-31.jpg",
+   "thumb": "thumbs/photography/ph-31.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "hikers on a chaparral trail"
   },
   {
    "src": "photography/ph-32.jpg",
+   "thumb": "thumbs/photography/ph-32.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "the moon over bluffs at a dusk beach"
   },
   {
    "src": "photography/ph-33.jpg",
+   "thumb": "thumbs/photography/ph-33.jpg",
    "w": 1072,
    "h": 1600,
    "caption": "a Joshua tree silhouette beside an empty road"
   },
   {
    "src": "photography/ph-34.jpg",
+   "thumb": "thumbs/photography/ph-34.jpg",
    "w": 1600,
    "h": 1072,
    "caption": "granite boulders and yucca under a pale pink sky"
   },
   {
    "src": "photography/ph-35.jpg",
+   "thumb": "thumbs/photography/ph-35.jpg",
    "w": 1600,
    "h": 1072,
    "caption": "a motorcyclist riding down an empty desert highway"
   },
   {
    "src": "photography/ph-36.jpg",
+   "thumb": "thumbs/photography/ph-36.jpg",
    "w": 956,
    "h": 1600,
    "caption": "open balcony doors over sunlit rooftops"
   },
   {
    "src": "photography/ph-37.jpg",
+   "thumb": "thumbs/photography/ph-37.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "the Death Valley Inn sign against desert hills"
   },
   {
    "src": "photography/ph-38.jpg",
+   "thumb": "thumbs/photography/ph-38.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "a snowy garden seen through a window"
   },
   {
    "src": "photography/ph-39.jpg",
+   "thumb": "thumbs/photography/ph-39.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "a breakfast table with orange juice and a paperback"
   },
   {
    "src": "photography/ph-40.jpg",
+   "thumb": "thumbs/photography/ph-40.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "autumn reds along a rocky river bank"
   },
   {
    "src": "photography/ph-41.jpg",
+   "thumb": "thumbs/photography/ph-41.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "pine trunks and golden ferns by a lake"
   },
   {
    "src": "photography/ph-42.jpg",
+   "thumb": "thumbs/photography/ph-42.jpg",
    "w": 1600,
    "h": 1200,
    "caption": "packing up camp on a beach at night"

@@ -2,7 +2,7 @@
 
 Static prototypes, no build step. Open `prototype/page/index.html` in a browser.
 
-- `prototype/page/`: the page. A stage on the left (drawing, ASCII or brick head), the column on the right.
+- `prototype/page/`: the page. A stage on the left (brick head or ASCII), the column on the right.
 - `prototype/head/`: the brick head on its own.
 - `assets/work/art/`, `assets/work/photography/`: the pictures the page shows, in filename order.
 - `tools/`: scripts that generate the data files under `prototype/`. Run them from the repo root.

@@ -3,312 +3,492 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Page study 01</title>
+<title>Guillermo Basterra</title>
+<meta name="description" content="Guillermo Basterra, applied AI engineer in New York. LLM evaluation, agent workflows, and drawing, film photography and essays on the side.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23F5F5EF'/%3E%3Crect x='4' y='4' width='8' height='8' fill='%23312F28'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300&family=Just+Me+Again+Down+Here&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Mynerve&family=Nanum+Pen+Script&family=Zeyada&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #F5F5EF; --ink: #312F28; --soft: #77726A; --muted: #A7A199; --surface: #D0CCC3;
-    --hand: "Just Me Again Down Here";
+    --accent: #3D8FA0;
+    --hand: "Nanum Pen Script"; --hand-size: 1;
     --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    --fade: 0.25s;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--paper); color: var(--ink); }
-  body { font: 12.5px/1.55 "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { font: 14px/1.55 "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
   /* One rule for the whole page: underlined text leaves the page, and nothing else is underlined. */
-  a { color: inherit; text-decoration: underline; text-decoration-color: var(--muted); text-underline-offset: 3px; }
+  a { color: inherit; text-decoration: underline; text-decoration-color: var(--muted); text-underline-offset: 3px; transition: text-decoration-color 0.15s; }
   a:hover { text-decoration-color: var(--ink); }
-  button { all: unset; cursor: pointer; color: var(--muted); }
+  button { all: unset; cursor: pointer; color: var(--muted); transition: color 0.15s; }
   button:hover, button[aria-pressed="true"] { color: var(--ink); }
   button[aria-pressed="true"] { border-bottom: 1px solid var(--ink); }
   :focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
 
-  .page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); column-gap: 48px; padding-right: clamp(56px, 9vw, 180px); }
+  /* Paper tooth: a fine grain over everything, so the flat ground is never perfectly smooth. */
+  body::after { content: ""; position: fixed; inset: 0; z-index: 9; pointer-events: none; opacity: 0.22; mix-blend-mode: multiply;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 -1.6 1.3'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
-  /* Left: one stage, several things that can stand on it.
-     --size and --left set the figure a little under full size and a little left of centre (--left in stage widths). */
-  .stage { position: sticky; top: 0; height: 100vh; container-type: size; overflow: hidden; --size: 0.86; --left: 0.03; }
-  .layer { position: absolute; inset: 0; display: none; }
-  .stage[data-show="head"] [data-layer="head"],
-  .stage[data-show="ascii"] [data-layer="ascii"],
-  .stage[data-show="drawing"] [data-layer="drawing"] { display: grid; }
-  .stage[data-viewing] .layer { display: none; }
-  .stage[data-viewing] [data-layer="viewer"] { display: grid; }
-  .layer iframe { width: 100%; height: 100%; border: 0; }
+  .page { display: grid; position: relative; grid-template-columns: minmax(0, 1fr) minmax(300px, 420px); column-gap: 48px; padding-right: clamp(56px, 9vw, 180px); }
+
+  /* Left: one stage, several things that can stand on it, cross-fading as they change.
+     --size sets the figure well under full size, one small thing in an open field; --left moves it off centre (in stage widths). */
+  .stage { position: sticky; top: 0; height: 100vh; container-type: size; overflow: hidden; --size: 0.6; --left: 0; }
+  .layer { position: absolute; inset: 0; display: grid; opacity: 0; visibility: hidden; transition: opacity var(--fade), visibility 0s var(--fade); }
+  .stage:not([data-viewing], [data-reading])[data-show="head"] [data-layer="head"],
+  .stage:not([data-viewing], [data-reading])[data-show="ascii"] [data-layer="ascii"],
+  .stage[data-reading] [data-layer="reader"],
+  .stage[data-viewing] [data-layer="viewer"] { opacity: 1; visibility: visible; transition-delay: 0s; }
+  .layer iframe { width: 100%; height: 100%; border: 0; opacity: 0; transition: opacity 0.6s; }
+  .layer iframe.ready { opacity: 1; }
   [data-layer="ascii"] { place-items: center; }
   [data-layer="ascii"] pre {
     margin: 0; font-family: var(--mono); line-height: 1; letter-spacing: 0;
     /* 96 x 65 characters, 0.6em wide each: fit whichever side runs out first. */
     font-size: calc(var(--size) * min(88cqh / 65, 88cqw / 57.6));
+    translate: calc(var(--left) * -100cqw) 0;
   }
-  [data-layer="drawing"] { place-items: end center; }
-  [data-layer="drawing"] img { height: calc(var(--size) * 90cqh); max-width: 92cqw; object-fit: contain; object-position: bottom; }
-  [data-layer="ascii"] pre, [data-layer="drawing"] img { translate: calc(var(--left) * -100cqw) 0; }
 
-  /* The viewer: one picture (or the essay list) alone in the field. */
-  [data-layer="viewer"] { place-items: center; padding: 64px 96px; }
-  .frame img { display: block; max-height: calc(100cqh - 128px); max-width: calc(100cqw - 192px); width: auto; height: auto; }
-  #titles { list-style: none; margin: 0; padding: 0; width: min(70cqw, 420px); }
-  #titles li { display: flex; justify-content: space-between; gap: 24px; padding: 3px 0; }
-  /* An open set is flipped with one big arrow beside the picture. The one going back shows up once there is a back. */
-  .turn { position: absolute; top: 50%; translate: 0 -50%; z-index: 1; padding: 48px 32px; color: var(--ink); }
+  /* The viewer: one picture alone in the field. Clicking it turns to the next. */
+  [data-layer="viewer"] { place-items: center; padding: 96px 96px 56px; }
+  .frame { cursor: pointer; touch-action: pan-y; }
+  .frame img { display: block; max-height: calc(100cqh - 152px); max-width: calc(100cqw - 192px); width: auto; height: auto; transition: opacity 0.18s; }
+  /* An open set is flipped with a hairline arrow either side of the picture. */
+  .turn { position: absolute; top: 50%; translate: 0 -50%; z-index: 1; padding: 40px 36px; color: var(--soft); opacity: 0; visibility: hidden; transition: opacity var(--fade), visibility 0s var(--fade), color 0.15s; }
+  .stage[data-flipping] .turn { opacity: 1; visibility: visible; transition-delay: 0s; }
   .turn[data-step="-1"] { left: 0; }
   .turn[data-step="1"] { right: 0; }
-  .turn svg { display: block; width: 30px; height: 60px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: translate 0.15s; }
-  .turn[data-step="-1"]:hover svg { translate: -4px 0; }
-  .turn[data-step="1"]:hover svg { translate: 4px 0; }
+  .turn svg { display: block; width: 11px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; transition: translate 0.15s; }
+  .turn[data-step="-1"]:hover svg { translate: -3px 0; }
+  .turn[data-step="1"]:hover svg { translate: 3px 0; }
   [hidden] { display: none !important; }
 
-  .tag, .tools { font: 11px/1.5 var(--mono); color: var(--muted); }
-  .id { position: absolute; left: 24px; top: 20px; z-index: 1; margin: 0; font: inherit; font-size: 11px; line-height: 1.35; }
-  .id b { font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; display: block; }
-  .tools { position: absolute; right: 24px; top: 20px; z-index: 1; }
-  .tools, .tools span { display: flex; gap: 14px; }
-  #hands { margin-left: 14px; }
+  /* The reader: the opening of one essay, set like a page and running out into the paper. */
+  /* Every essay starts from the same line, whatever its length. The layer's one row is the stage's height, so a long opening is cut to fit and the link below it always shows. */
+  [data-layer="reader"] { place-items: start center; grid-template: minmax(0, 1fr) / minmax(0, 1fr); padding: clamp(88px, 15cqh, 150px) 48px 40px; }
+  .essay { width: min(460px, 100%); height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, auto) auto; align-content: start; transition: opacity 0.18s; }
+  /* Room for a two-line title, so the text starts on the same line under a short one. */
+  .essay .top { min-height: calc(17px + 6px + 2 * 1.1 * var(--title) + 4px + 1.55em + 22px); --title: 34px; }
+  .essay .tag { margin-left: 0; display: block; }
+  .essay h3 { margin: 6px 0 4px; font: 300 34px/1.1 "Helvetica Neue", Helvetica, Arial, sans-serif; text-wrap: balance; }
+  .essay .sub { color: var(--soft); margin: 0; }
+  .essay .text { overflow: hidden; font: 17px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; -webkit-mask-image: linear-gradient(#000 45%, transparent); mask-image: linear-gradient(#000 45%, transparent); }
+  .essay .text p { margin: 0; }
+  .essay .text p + p { text-indent: 1.5em; }
+  .essay .more { margin-top: 14px; }
 
-  /* Right: the column. */
-  /* Centred down the page where the window is taller than the column; from the top where it isn't. */
-  .col { min-height: 100vh; padding: 28px 0; max-width: 380px; display: flex; flex-direction: column; justify-content: center; --gap: 30px; }
-  .col > * + *, .about section + section { margin-top: var(--gap); }
-  /* Away from the about page its text clears, and keeps its room so the contents stay put. */
-  .col[data-away] .about { visibility: hidden; }
-  .hand { margin: 0 0 8px; font: 400 36px/1 var(--hand), cursive; letter-spacing: 0.1em; white-space: nowrap; }
+  .tag { font: 11px/1.5 var(--mono); color: var(--soft); }
+  /* The name is the largest thing on the page. */
+  .id { position: absolute; left: 24px; top: 18px; z-index: 1; margin: 0; font: inherit; font-size: 12px; line-height: 1.35; }
+  .id button { color: var(--ink); }
+  .id b { font-weight: 400; font-size: 20px; line-height: 1.2; letter-spacing: 0.04em; text-transform: uppercase; display: block; margin-bottom: 3px; }
+
+  /* Right: the column. The page is always all here: the contents pinned to the top, the links to the foot,
+     and between them whatever is open, centred where the window is taller than it. */
+  .col { min-height: 100vh; padding: 20px 0 24px; max-width: 420px; display: grid; grid-template-rows: auto 1fr auto; --gap: 30px; }
+  .pane section + section { margin-top: var(--gap); }
+  .col > * { animation: arrive 0.6s both; }
+  .col > :nth-child(2) { animation-delay: 0.08s; }
+  .col > :nth-child(3) { animation-delay: 0.16s; }
+  @keyframes arrive { from { opacity: 0; translate: 0 6px; } }
+  /* The contents open things on the stage or in the column. Never underlined: they don't leave the page.
+     A brick marks the one that's open. */
+  .contents { display: flex; flex-wrap: wrap; gap: 2px 14px; margin-left: -11px; }
+  .contents button { position: relative; padding-left: 11px; color: var(--soft); }
+  .contents button:hover, .contents button[aria-pressed="true"] { color: var(--ink); border: 0; }
+  .contents button::before { content: ""; position: absolute; left: 0; top: 50%; width: 5px; height: 5px; margin-top: -2px; background: var(--accent); scale: 0; transition: scale 0.2s; }
+  .contents button[aria-pressed="true"]::before { scale: 1; }
+  /* The panes share one cell, so the tallest (the about page) holds the room and the index never moves. */
+  .panes { display: grid; align-self: center; padding: var(--gap) 0; }
+  .pane { grid-area: 1 / 1; opacity: 0; visibility: hidden; transition: opacity var(--fade), visibility 0s var(--fade); }
+  .pane.on { opacity: 1; visibility: visible; transition-delay: 0s; }
+  .hand { margin: 0 0 8px; font: 400 calc(40px * var(--hand-size))/1 var(--hand), cursive; height: 36px; display: flex; align-items: center; letter-spacing: 0.04em; white-space: nowrap; }
   .hand span { display: inline-block; min-width: 0.3em; }
   .col p { margin: 0; text-wrap: pretty; }
   .col ul, .col ol { list-style: none; margin: 0; padding: 0; }
   .tag { margin-left: auto; white-space: nowrap; }
 
   /* Work is a table to read, nothing to press: where, what, when. */
-  .cv li { display: grid; grid-template-columns: 92px 1fr auto; column-gap: 12px; align-items: baseline; padding: 2.5px 0; }
+  .cv li { display: grid; grid-template-columns: 100px 1fr auto; column-gap: 12px; align-items: baseline; padding: 2.5px 0; }
   .cv span:nth-child(2), .made p { color: var(--soft); }
 
-  /* Building: each thing says what it is in a line. The name is a link only where there is somewhere to go. */
+  /* Building and essays: a name and a year. The name is a link only where there is somewhere to go. */
   .made li { padding: 3px 0; }
   .made div { display: flex; align-items: baseline; }
   a.out::after { content: "\00a0↗"; }
 
-  /* Contents open on the stage. Numbered, never underlined: they don't leave the page. */
-  .contents :is(button, a, .off) { display: flex; align-items: baseline; gap: 10px; width: 100%; color: var(--ink); text-decoration: none; }
-  .contents .hand { margin: 0; font-size: 23px; letter-spacing: 0.04em; width: 40px; transition: translate 0.15s; }
-  .contents button:hover .hand, .contents button[aria-pressed="true"] .hand { translate: 4px 0; }
-  .contents button[aria-pressed="true"] { border: 0; }
-  .contents button[aria-pressed="true"] .tag { color: var(--ink); }
-  .contents .off { color: var(--muted); }
-  .contents a .tag { text-decoration: underline; text-underline-offset: 3px; }
+  /* An open set names itself where the about page was, with the way back beside it. */
+  .pane header { display: flex; align-items: baseline; }
+  .pane header .tag { margin-left: 14px; }
+  .pane header button, .pane header a { margin-left: auto; font: 11px/1.5 var(--mono); color: var(--soft); }
+  .pane header button:hover, .pane header a:hover { color: var(--ink); }
+  .pane header .tag + button { margin-left: auto; }
+  .pane header a + button { margin-left: 16px; }
+  /* Essays: pick one and its opening is set on the stage. A brick marks the one that's there. */
+  .essays button { display: block; width: 100%; position: relative; padding: 5px 0; color: var(--ink); }
+  .essays button div { display: flex; align-items: baseline; }
+  .essays button p { color: var(--soft); }
+  .essays button::before { content: ""; position: absolute; left: -11px; top: 13px; width: 5px; height: 5px; background: var(--accent); scale: 0; transition: scale 0.2s; }
+  .essays button[aria-current="true"]::before { scale: 1; }
+  .essays button:not([aria-current="true"]) { opacity: 0.6; transition: opacity 0.15s; }
+  .essays button:hover { opacity: 1; }
+  /* Music plays here, in SoundCloud's own player. */
+  .player { display: block; width: 100%; height: 380px; border: 0; margin-top: 8px; opacity: 0; transition: opacity 0.6s; }
+  .player.ready { opacity: 1; }
+  /* A few pictures on the about page, each a door into its set. */
+  .strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .strip button { display: block; aspect-ratio: 1; transition: opacity 0.15s; }
+  .strip button:hover { opacity: 0.75; }
+  .strip img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  /* The contact sheet: every picture in the set, the open one at full strength. */
+  .sheet { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 6px; }
+  .sheet button { display: block; aspect-ratio: 1; opacity: 0.45; transition: opacity 0.15s; }
+  .sheet button:hover { opacity: 1; }
+  .sheet button[aria-current="true"] { opacity: 1; outline: 1px solid var(--ink); outline-offset: 2px; }
+  .sheet img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
   .links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
 
-  /* A short window: close the column up so it still fits in one screen. */
-  @media (max-height: 940px) and (min-width: 821px) { .col { --gap: 22px; padding: 20px 0; } }
-  @media (max-width: 820px) {
-    .page { display: block; padding: 0 20px; }
-    .stage { position: relative; height: 68vh; margin: 0 -20px; --left: 0; }
-    .col { display: block; min-height: 0; max-width: none; }
-    .col[data-away] .about { display: none; }
-    .tools { left: 24px; right: auto; top: 60px; }
-    [data-layer="viewer"] { padding: 96px 52px 40px; }
-    .frame img { max-height: calc(100cqh - 136px); max-width: calc(100cqw - 104px); }
-    .turn { padding: 40px 14px; }
-    .turn svg { width: 22px; height: 44px; }
+  /* A laptop window: close the column up so it still fits in one screen. */
+  @media (max-height: 800px) and (min-width: 821px) {
+    .col { --gap: 16px; padding-bottom: 18px; line-height: 1.45; }
+    .player { height: 330px; }
+    .strip { grid-template-columns: repeat(6, 44px); }
+    .panes { padding: 12px 0; }
+    .essay .text { font-size: 16px; }
+    .hand { font-size: calc(34px * var(--hand-size)); height: 30px; margin-bottom: 5px; }
+    .cv li { padding: 1.5px 0; }
+    .made li { padding: 2px 0; }
+    .sheet { grid-template-columns: repeat(7, 1fr); }
   }
-  @media (prefers-reduced-motion: reduce) { .contents .hand, .turn svg { transition: none; } }
+  @media (max-width: 820px) {
+    body { font-size: 14px; }
+    /* The head stands clear of the name and the contents. */
+    [data-layer="head"], [data-layer="ascii"] { top: 100px; }
+    .page { display: block; padding: 0 20px; }
+    .stage { position: relative; height: 52vh; min-height: 380px; margin: 0 -20px; --size: 0.72; }
+    .stage[data-reading] { height: auto; min-height: 0; overflow: visible; container-type: inline-size; }
+    .stage[data-reading] [data-layer="reader"] { position: relative; display: block; padding: 122px 20px 28px; }
+    .essay .text { max-height: 13.5em; }
+    .essay h3 { font-size: 28px; }
+    .essay .top { --title: 28px; }
+    .id b { font-size: 18px; }
+    .col { display: block; min-height: 0; max-width: none; padding-top: 0; }
+    /* The contents go up under the name, over the stage. */
+    .contents { position: absolute; left: 13px; right: 20px; top: 76px; z-index: 1; margin: 0; }
+    .panes { padding-top: 0; }
+    /* No room to hold: only the open pane takes space. */
+    .pane:not(.on) { display: none; }
+    .cv li { grid-template-columns: 104px 1fr auto; }
+    [data-layer="viewer"] { padding: 116px 44px 20px; }
+    .frame img { max-height: calc(100cqh - 136px); max-width: calc(100cqw - 88px); }
+    .turn { padding: 40px 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
 <div class="page">
   <div class="stage" id="stage">
-    <h1 class="id"><b>Guillermo Basterra</b>applied ai engineer, new york</h1>
-    <div class="tools">
-      <span id="stages">
-        <button data-stage="drawing">drawing</button>
-        <button data-stage="ascii">ascii</button>
-        <button data-stage="head">head</button>
-      </span>
-      <span id="hands">
-        hand
-        <button data-hand="Just Me Again Down Here">a</button>
-        <button data-hand="Gaegu">b</button>
-        <button data-hand="Reenie Beanie">c</button>
-      </span>
-    </div>
-    <div class="layer" data-layer="drawing">
-      <!-- A real drawing dropped at assets/portrait/drawing.svg wins; the photo trace stands in until then. -->
-      <img src="../../assets/portrait/drawing.svg" onerror="this.onerror=null;this.src='../../assets/portrait/trace.png'" alt="Line drawing of Guillermo">
-    </div>
+    <h1 class="id"><button data-open="about" aria-label="Guillermo Basterra, back to the about page"><b>Guillermo Basterra</b>computer science m.eng, cornell tech · new york</button></h1>
     <div class="layer" data-layer="ascii"><pre id="ascii" role="img" aria-label="Guillermo, drawn in typed characters"></pre></div>
     <div class="layer" data-layer="head"><iframe id="head" title="Brick head: move over it to stir the bricks, drag to turn"></iframe></div>
-    <div class="layer" data-layer="viewer">
-      <div class="frame" id="frame"><img id="shot" alt=""></div>
-      <ol id="titles"></ol>
+    <div class="layer" data-layer="reader">
+      <article class="essay" id="essay">
+        <div class="top">
+          <span class="tag" id="essay-date"></span>
+          <h3 id="essay-title"></h3>
+          <p class="sub" id="essay-sub"></p>
+        </div>
+        <div class="text" id="essay-text"></div>
+        <p class="more"><a class="out" id="essay-link">keep reading on Substack</a></p>
+      </article>
     </div>
-    <button class="turn" id="back" data-step="-1" aria-label="Previous picture" hidden><svg viewBox="0 0 30 60" aria-hidden="true"><path d="M25 3 5 30l20 27"/></svg></button>
-    <button class="turn" id="next" data-step="1" aria-label="Next picture" hidden><svg viewBox="0 0 30 60" aria-hidden="true"><path d="M5 3l20 27L5 57"/></svg></button>
+    <div class="layer" data-layer="viewer">
+      <div class="frame" id="frame"><img id="shot" alt="" style="opacity: 0"></div>
+    </div>
+    <button class="turn" data-step="-1" aria-label="Previous picture"><svg viewBox="0 0 11 22" aria-hidden="true"><path d="M10 1 1 11l9 10"/></svg></button>
+    <button class="turn" data-step="1" aria-label="Next picture"><svg viewBox="0 0 11 22" aria-hidden="true"><path d="M1 1l9 10-9 10"/></svg></button>
   </div>
 
   <main class="col" id="col">
-    <section>
-      <h2 class="hand">contents</h2>
-      <ol class="contents" id="contents">
-        <li><button data-open="about"><span class="hand">01.</span><span>about</span><span class="tag"></span></button></li>
-        <li><button data-open="essays"><span class="hand">02.</span><span>essays</span><span class="tag"></span></button></li>
-        <li><button data-open="art"><span class="hand">03.</span><span>art</span><span class="tag"></span></button></li>
-        <li><button data-open="photography"><span class="hand">04.</span><span>photography</span><span class="tag"></span></button></li>
-        <li><div class="off"><span class="hand">05.</span><span>music</span><span class="tag">soon</span></div></li>
-        <li><a href="../../assets/resume.pdf"><span class="hand">06.</span><span>resume</span><span class="tag">pdf&nbsp;↗</span></a></li>
-      </ol>
-    </section>
+    <nav class="contents" id="contents" aria-label="Contents">
+      <button data-open="about">about</button>
+      <button data-open="essays">essays</button>
+      <button data-open="art">art</button>
+      <button data-open="photography">photography</button>
+      <button data-open="music">music</button>
+    </nav>
 
-    <!-- The about page: what the site lands on, and what the other contents clear. -->
-    <div class="about">
-      <section>
-        <h2 class="hand">about me</h2>
-        <p>I'm Guillermo, an applied AI engineer in New York. I build LLM evaluation pipelines, agent workflows, and the checks that tell you when to trust a model. I'm a grad student at Cornell Tech and studied computer science at USC. Born in Spain, raised in Los Angeles. Away from the keyboard I draw and paint, shoot 35mm film, DJ and produce house music, and write essays.</p>
-      </section>
+    <div class="panes">
+      <!-- The about page: what the site lands on, and what an open set stands in for. -->
+      <div class="pane" data-pane="about">
+        <section>
+          <h2 class="hand">about me</h2>
+          <p>I'm Guillermo, a computer science master's student at Cornell Tech in New York. I build and evaluate LLM systems, and lately I'm working on agentic commerce and thinking about AI safety. I'm looking for full-time applied AI roles starting summer 2027. I grew up in Madrid and London, and outside of work I DJ and produce house music, draw, paint and shoot 35mm film.</p>
+        </section>
 
-      <section>
-        <h2 class="hand">work</h2>
-        <ul class="cv">
-          <li><span>Cornell Tech</span><span>grad student</span><span class="tag">now</span></li>
-          <li><span>Prior Foundry</span><span>research engineer, policy simulation</span><span class="tag">2025–</span></li>
-          <li><span>Kantar</span><span>applied AI engineer, digital twins</span><span class="tag">2025</span></li>
-          <li><span>Pencil AI</span><span>applied AI engineer, ad evaluation</span><span class="tag">2024</span></li>
-          <li><span>USC CAIS</span><span>research assistant, wildfire models</span><span class="tag">2023</span></li>
-        </ul>
-      </section>
+        <section>
+          <header><h2 class="hand">work</h2><a class="out" href="../../assets/resume.pdf">full resume</a></header>
+          <ul class="cv">
+            <li><span>Cornell Tech</span><span>M.Eng, computer science</span><span class="tag">2026–27</span></li>
+            <li><span>Prior Foundry</span><span>research engineer, policy simulation</span><span class="tag">2026</span></li>
+            <li><span>Kantar</span><span>applied AI engineer, digital twins</span><span class="tag">2025</span></li>
+            <li><span>Pencil AI</span><span>applied AI engineer, ad evaluation</span><span class="tag">2024</span></li>
+            <li><span>USC CAIS</span><span>research assistant, wildfire models</span><span class="tag">2023</span></li>
+            <li><span>USC</span><span>B.S., computer science</span><span class="tag">2026</span></li>
+          </ul>
+        </section>
 
-      <section>
-        <h2 class="hand">building</h2>
-        <ul class="made">
-          <li><div><a class="out" href="https://github.com/guillebasterra/Agent-Content-Paywall">Content Paywall for AI Agents</a><span class="tag">2026</span></div>
-            <p>Sells articles to AI agents, one paid read at a time.</p></li>
-          <li><div><a class="out" href="https://github.com/guillebasterra/embedded-taste-profile">Taste profile</a><span class="tag">2026</span></div>
-            <p>My Pinterest boards as a taste profile any agent can query.</p></li>
-          <li><div><a class="out" href="https://github.com/guillebasterra/dj-set-copyright-check">check-set</a><span class="tag">2026</span></div>
-            <p>Checks a DJ set for copyright claims before I record it.</p></li>
-          <li><div><span>Agentic journal</span><span class="tag">2026</span></div>
-            <p>A local-first journal that surfaces cognitive distortions.</p></li>
-        </ul>
-      </section>
+        <section>
+          <h2 class="hand">building</h2>
+          <ul class="made">
+            <li><div><a class="out" href="https://tollgate-omega.vercel.app">Content Paywall for AI Agents</a><span class="tag">2026</span></div>
+              <p>Sells articles to AI agents, one paid read at a time. Live demo; I lead engineering on it at Cornell Tech's Product Studio. <a href="https://github.com/guillebasterra/Agent-Content-Paywall">Code</a></p></li>
+            <li><div><a class="out" href="https://github.com/guillebasterra/DJ-to-Agents">Agent Crowd</a><span class="tag">2026</span></div>
+              <p>100 simulated agents that dance to a live DJ set.</p></li>
+            <li><div><a class="out" href="https://github.com/guillebasterra/embedded-taste-profile">Taste profile</a><span class="tag">2026</span></div>
+              <p>My Pinterest boards as a taste profile any agent can query.</p></li>
+          </ul>
+        </section>
+
+        <!-- pictures: set:number, in the order shown -->
+        <section class="strip" id="strip" data-picks="photography:5 photography:2 photography:23 art:3 art:11 art:21"></section>
+      </div>
+
+      <div class="pane" data-pane="essays">
+        <header><h2 class="hand">essays</h2><button data-open="about">← about</button></header>
+<ul class="essays" id="essays"></ul>
+      </div>
+
+      <div class="pane" data-pane="art">
+        <header><h2 class="hand">art</h2><span class="tag" data-count="art"></span><button data-open="about">← about</button></header>
+        <div class="sheet" data-sheet="art"></div>
+      </div>
+
+      <div class="pane" data-pane="photography">
+        <header><h2 class="hand">photography</h2><span class="tag" data-count="photography"></span><button data-open="about">← about</button></header>
+        <div class="sheet" data-sheet="photography"></div>
+      </div>
+
+      <div class="pane" data-pane="music">
+        <header><h2 class="hand">music</h2><a class="out" href="https://soundcloud.com/basterra">soundcloud</a><button data-open="about">← about</button></header>
+        <iframe class="player" id="player" title="Basterra on SoundCloud" allow="autoplay; encrypted-media" scrolling="no"></iframe>
+      </div>
     </div>
 
-    <section>
-      <div class="links">
-        <a href="https://github.com/guillebasterra">github</a>
-        <a href="https://www.linkedin.com/in/guillermo-basterra-diezhandino">linkedin</a>
-        <a href="https://guillermobasterra.substack.com/">substack</a>
-        <a href="https://x.com/willybasterra">x</a>
-        <a href="mailto:guillebasterra@gmail.com">email</a>
-      </div>
-    </section>
+    <div class="links">
+      <a href="../../assets/resume.pdf">resume</a>
+      <a href="mailto:guillebasterra@gmail.com">email</a>
+      <a href="https://github.com/guillebasterra">github</a>
+      <a href="https://www.linkedin.com/in/guillermo-basterra-diezhandino">linkedin</a>
+      <a href="https://guillermobasterra.substack.com/">substack</a>
+      <a href="https://x.com/willybasterra">x</a>
+    </div>
   </main>
 </div>
 
 <script src="ascii.js"></script>
 <script src="work.js"></script>
+<script src="essays.js"></script>
 <script>
 const params = new URLSearchParams(location.search);
 const stage = document.getElementById('stage');
 const $ = (id) => document.getElementById(id);
 
-// Stage: what stands on the left. ?stage=drawing|ascii|head
+// Stage: what stands on the left, the brick head unless ?stage=ascii asks for the typed one.
 $('ascii').textContent = window.PORTRAIT_ASCII.text;
+$('head').addEventListener('load', () => $('head').classList.add('ready'));
 function show(name) {
   stage.dataset.show = name;
   // The head is a WebGL page of its own; only load it once it's asked for.
   if (name === 'head' && !$('head').src) {
     const css = getComputedStyle(stage);
-    $('head').src = `../head/index.html?size=${css.getPropertyValue('--size').trim()}&x=${-css.getPropertyValue('--left')}`;
+    // The halftone is printed in two inks: the accent in the light bricks, running to the ink in the dark. ?tint=B80D16 tries another.
+    const tint = params.get('tint') || css.getPropertyValue('--accent').trim().slice(1);
+    $('head').src = `../head/index.html?size=${css.getPropertyValue('--size').trim()}&x=${-css.getPropertyValue('--left')}&tint=${tint}`;
   }
-  for (const b of document.querySelectorAll('#stages button')) b.setAttribute('aria-pressed', b.dataset.stage === name);
 }
-$('stages').addEventListener('click', (e) => { if (e.target.dataset.stage) show(e.target.dataset.stage); });
-show(params.get('stage') || 'drawing');
+show(params.get('stage') === 'ascii' ? 'ascii' : 'head');
 
-// Contents: the column is the index, the stage is the viewer.
-// About is the landing page. Hovering another row peeks at it; clicking opens it and clears the about page.
-const SETS = {
-  essays: { titles: [['Scared to Death', '2026'], ['Delete TikTok and Experience Yourself', '2025'], ['How My Tinnitus Taught Me to Live', '2025']] },
-  art: { pictures: window.WORK.art },
-  photography: { pictures: window.WORK.photography },
-};
+// The column is the page and the stage is the viewer.
+// About is the landing page. Opening another row puts it where the about page was: essays as a list
+// with the opening of one on the stage, pictures as a contact sheet with the open one on the stage,
+// music as a player. Hovering a picture row peeks at it.
+const SETS = { essays: { essays: window.ESSAYS }, art: { pictures: window.WORK.art }, photography: { pictures: window.WORK.photography }, music: {} };
 const DIR = '../../assets/work/';
-const place = { art: 0, photography: 0 };   // where each set was left
+const place = { essays: 0, art: 0, photography: 0 };   // where each set was left
+const items = (key) => SETS[key]?.pictures || SETS[key]?.essays;
+const PLAYER = 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/users/202463682&color=%23312f28&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false';
 const two = (k) => String(k).padStart(2, '0');
 let open = null, peek = null;
 
+// The picture fades out, changes once the next one has arrived, and fades back in.
+function picture(it) {
+  const shot = $('shot'), src = DIR + it.src;
+  if (shot.dataset.src === src) return;
+  shot.dataset.src = src;
+  shot.style.opacity = 0;
+  const next = new Image();
+  const arrived = new Promise((done) => { next.onload = next.onerror = done; });
+  next.src = src;
+  Promise.all([arrived, new Promise((done) => setTimeout(done, 120))]).then(() => {
+    if (shot.dataset.src !== src) return;   // turned again meanwhile
+    Object.assign(shot, { src, width: it.w, height: it.h, alt: it.caption });
+    shot.style.opacity = 1;
+  });
+}
+// The opening of an essay, set on the stage.
+function essay(it) {
+  const el = $('essay');
+  if (el.dataset.link === it.link) return;
+  const first = !el.dataset.link;
+  el.dataset.link = it.link;
+  const set = () => {
+    $('essay-date').textContent = it.date;
+    $('essay-title').textContent = it.title;
+    $('essay-sub').textContent = it.subtitle;
+    $('essay-text').replaceChildren(...it.opening.map((t) => Object.assign(document.createElement('p'), { textContent: t })));
+    $('essay-link').href = it.link;
+    el.style.opacity = 1;
+  };
+  if (first) return set();
+  el.style.opacity = 0;
+  setTimeout(() => { if (el.dataset.link === it.link) set(); }, 180);
+}
+$('essays').append(...window.ESSAYS.map((it, i) => {
+  const li = document.createElement('li'), b = document.createElement('button');
+  b.dataset.at = i;
+  b.innerHTML = '<div><span></span><span class="tag"></span></div><p></p>';
+  b.querySelector('span').textContent = it.title;
+  b.querySelector('.tag').textContent = it.year;
+  b.querySelector('p').textContent = it.subtitle;
+  li.append(b);
+  return li;
+}));
+$('player').addEventListener('load', () => $('player').classList.add('ready'));
+// A set's contact sheet is laid out the first time it opens.
+function sheet(name) {
+  const el = document.querySelector(`[data-sheet="${name}"]`);
+  if (!el.children.length) el.append(...SETS[name].pictures.map((it, i) => {
+    const b = document.createElement('button');
+    b.dataset.at = i;
+    b.setAttribute('aria-label', `Picture ${i + 1}`);
+    b.append(Object.assign(new Image(), { src: DIR + it.thumb, alt: '', loading: 'lazy' }));
+    return b;
+  }));
+  for (const b of el.children) b.setAttribute('aria-current', Number(b.dataset.at) === place[name]);
+}
 function draw() {
   const key = peek || open;
-  const { pictures, titles } = SETS[key] || {};
-  stage.toggleAttribute('data-viewing', key !== null);
-  $('col').toggleAttribute('data-away', open !== null);
-  for (const b of document.querySelectorAll('#contents button')) {
-    const name = b.dataset.open, set = SETS[name];
-    b.setAttribute('aria-pressed', name === (open || 'about'));
-    // An open set counts its place where its size was.
-    if (set) b.querySelector('.tag').textContent = name === open && set.pictures ? `${two(place[name] + 1)} / ${two(set.pictures.length)}` : (set.pictures || set.titles).length;
-  }
-  // Arrows only on an open set of pictures; none back from the first.
-  const flipping = key === open && !!pictures;
-  $('back').hidden = !flipping || place[key] === 0;
-  $('next').hidden = !flipping || pictures.length < 2;
-  if (!key) return;
-  $('frame').hidden = !pictures;
-  $('titles').hidden = !titles;
-  if (pictures) {
-    const i = place[key], it = pictures[i];
-    Object.assign($('shot'), { src: DIR + it.src, width: it.w, height: it.h, alt: it.caption });
-    // Have the neighbours ready before they're asked for.
-    for (const near of [pictures[i + 1] || pictures[0], pictures[i - 1]]) if (near) new Image().src = DIR + near.src;
-  } else {
-    $('titles').replaceChildren(...titles.map(([title, year]) => {
-      const li = document.createElement('li');
-      li.append(Object.assign(document.createElement('span'), { textContent: title }), Object.assign(document.createElement('span'), { className: 'tag', textContent: year }));
-      return li;
-    }));
-  }
-}
-function flip(step) {
-  const pictures = open && SETS[open].pictures;
+  const pictures = SETS[key]?.pictures;
+  stage.toggleAttribute('data-viewing', !!pictures);
+  stage.toggleAttribute('data-reading', key === 'essays');
+  if (key === 'essays') essay(window.ESSAYS[place.essays]);
+  for (const b of document.querySelectorAll('#essays button')) b.setAttribute('aria-current', Number(b.dataset.at) === place.essays);
+  // SoundCloud is only asked for once music is opened.
+  if (open === 'music' && !$('player').src) $('player').src = PLAYER;
+  // Arrows only on an open set of pictures, not a peek.
+  stage.toggleAttribute('data-flipping', !!pictures && key === open && pictures.length > 1);
+  for (const p of document.querySelectorAll('.pane')) p.classList.toggle('on', p.dataset.pane === (open || 'about'));
+  for (const b of document.querySelectorAll('#contents button')) b.setAttribute('aria-pressed', b.dataset.open === (open || 'about'));
+  // An open set counts its place beside its name.
+  for (const c of document.querySelectorAll('[data-count]')) c.textContent = `${two(place[c.dataset.count] + 1)} / ${two(SETS[c.dataset.count].pictures.length)}`;
+  if (SETS[open]?.pictures) sheet(open);
   if (!pictures) return;
-  const i = place[open] + step;
-  if (i < 0) return;                     // nothing before the first
-  place[open] = i % pictures.length;     // past the last comes round to the first
-  draw();
-}
-function go(key) {
-  // About, or the row that's already open, goes back to the landing page.
-  open = key === 'about' || key === open ? null : key;
-  peek = null;
-  draw();
-  // On a phone the contents sit under the stage, which may have scrolled out of view.
-  if (open && stage.getBoundingClientRect().bottom < 120) stage.scrollIntoView({ behavior: 'smooth' });
+  const i = place[key];
+  picture(pictures[i]);
+  // Have the neighbours ready before they're asked for.
+  for (const near of [pictures[(i + 1) % pictures.length], pictures.at(i - 1)]) new Image().src = DIR + near.src;
 }
 
-for (const b of document.querySelectorAll('#contents button')) {
+// The address keeps up, so a picture can be linked to and the back button closes a set. ?open=art&n=3
+function address() {
+  const q = new URLSearchParams(location.search);
+  q.delete('open'); q.delete('n');
+  if (open) q.set('open', open);
+  if (open in place) q.set('n', place[open] + 1);
+  return location.pathname + (q.size ? '?' + q : '');
+}
+function read() {
+  const q = new URLSearchParams(location.search);
+  open = SETS[q.get('open')] ? q.get('open') : null;
+  if (open in place) place[open] = Math.max(0, Math.min(items(open).length, Number(q.get('n')) || 1) - 1);
+  peek = null;
+  draw();
+}
+function turnTo(i) {
+  const all = items(open);
+  if (!all) return;
+  place[open] = (i + all.length) % all.length;   // round at both ends
+  history.replaceState(null, '', address());
+  draw();
+}
+const flip = (step) => open in place && turnTo(place[open] + step);
+function go(key) {
+  // About, or the row that's already open, goes back to the landing page.
+  const next = key === 'about' || key === open ? null : key;
+  clearTimeout(peeking);
+  peek = null;
+  if (next !== open) { open = next; history.pushState(null, '', address()); }
+  draw();
+  // On a phone the stage may have scrolled out of view.
+  if (items(open) && stage.getBoundingClientRect().bottom < 120) stage.scrollIntoView({ behavior: 'smooth' });
+}
+addEventListener('popstate', read);
+
+let peeking;
+for (const b of document.querySelectorAll('[data-open]')) {
   const key = b.dataset.open;
   b.addEventListener('click', () => go(key));
-  if (!SETS[key]) continue;
-  b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { peek = key; draw(); } });
-  b.addEventListener('pointerleave', () => { peek = null; draw(); });
+  if (!SETS[key]?.pictures || !b.closest('#contents')) continue;
+  // A short wait, so running the cursor along the contents doesn't flash every set past.
+  b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse' && key !== open) peeking = setTimeout(() => { peek = key; draw(); }, 140); });
+  b.addEventListener('pointerleave', () => { clearTimeout(peeking); if (peek) { peek = null; draw(); } });
 }
+$('col').addEventListener('click', (e) => {
+  const cell = e.target.closest('.sheet button, .essays button');
+  if (cell) turnTo(Number(cell.dataset.at));
+  // On a phone the reader sits above the list, so bring it back into view.
+  if (cell?.closest('.essays') && stage.getBoundingClientRect().top < 0) stage.scrollIntoView({ behavior: 'smooth' });
+  const pick = e.target.closest('.strip button');
+  if (pick) { place[pick.dataset.set] = Number(pick.dataset.at); go(pick.dataset.set); }
+});
+// The pictures on the about page, named in the markup as set:number.
+$('strip').append(...$('strip').dataset.picks.split(' ').map((pick) => {
+  const [set, n] = pick.split(':'), it = SETS[set].pictures[n - 1], b = document.createElement('button');
+  if (!it) return '';
+  Object.assign(b.dataset, { set, at: n - 1 });
+  b.setAttribute('aria-label', `Open ${set}, picture ${n}`);
+  b.append(Object.assign(new Image(), { src: DIR + it.thumb, alt: '' }));
+  return b;
+}));
+// Turning: the arrows, a click on the picture, a swipe across it, or the arrow keys.
+let downX = null, swiped = false;
 stage.addEventListener('click', (e) => {
   const turn = e.target.closest('.turn');
   if (turn) flip(Number(turn.dataset.step));
+  else if (e.target.closest('#frame') && !swiped) flip(1);
+  swiped = false;
 });
+$('frame').addEventListener('pointerdown', (e) => { downX = e.clientX; swiped = false; });
+$('frame').addEventListener('pointerup', (e) => {
+  if (downX !== null && Math.abs(e.clientX - downX) > 40) { swiped = true; flip(e.clientX < downX ? 1 : -1); }
+  downX = null;
+});
+$('frame').addEventListener('dragstart', (e) => e.preventDefault());
 addEventListener('keydown', (e) => {
   if (!open) return;
   if (e.key === 'ArrowRight') flip(1);
   if (e.key === 'ArrowLeft') flip(-1);
   if (e.key === 'Escape') go('about');
 });
-// ?open=art&n=3 opens a set at a picture.
-if (SETS[params.get('open')]) {
-  open = params.get('open');
-  if (open in place) place[open] = Math.max(0, Math.min(SETS[open].pictures.length, Number(params.get('n')) || 1) - 1);
-}
-draw();
+read();
 
-// Hand headings: each letter gets its own case, tilt and drop, seeded by the text so it holds still between loads.
+// Hand headings: each letter gets its own tilt, drop and size, seeded by the text so it holds still between loads.
 for (const el of document.querySelectorAll('.hand')) {
   const text = el.textContent;
   let s = [...text].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7);
@@ -318,17 +498,17 @@ for (const el of document.querySelectorAll('.hand')) {
   for (const ch of text) {
     const span = document.createElement('span');
     span.setAttribute('aria-hidden', 'true');
-    span.textContent = ch === ' ' ? ' ' : r() < 0.7 ? ch.toUpperCase() : ch.toLowerCase();
-    span.style.transform = `translateY(${((r() - 0.5) * 0.12).toFixed(3)}em) rotate(${((r() - 0.5) * 9).toFixed(1)}deg) scale(${(0.9 + r() * 0.22).toFixed(2)})`;
+    span.textContent = ch;
+    span.style.transform = `translateY(${((r() - 0.5) * 0.1).toFixed(3)}em) rotate(${((r() - 0.5) * 7).toFixed(1)}deg) scale(${(0.94 + r() * 0.14).toFixed(2)})`;
     el.append(span);
   }
 }
-function hand(name) {
-  document.documentElement.style.setProperty('--hand', `"${name}"`);
-  for (const b of document.querySelectorAll('#hands button')) b.setAttribute('aria-pressed', b.dataset.hand === name);
+// ?hand=Zeyada tries another one. Each face is drawn at its own size, so they sit alike.
+const HANDS = { 'Nanum Pen Script': 1, 'Mynerve': 0.72, 'Zeyada': 0.98, 'Covered By Your Grace': 0.82 };
+if (HANDS[params.get('hand')]) {
+  document.documentElement.style.setProperty('--hand', `"${params.get('hand')}"`);
+  document.documentElement.style.setProperty('--hand-size', HANDS[params.get('hand')]);
 }
-$('hands').addEventListener('click', (e) => { if (e.target.dataset.hand) hand(e.target.dataset.hand); });
-hand(params.get('hand') || 'Just Me Again Down Here');
 </script>
 </body>
 </html>

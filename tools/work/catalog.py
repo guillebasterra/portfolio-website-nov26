@@ -7,21 +7,26 @@ remove or rename pictures there, then run this again.
 Alt text comes from the vault's library catalogs for the files they know
 (art-07.jpg is row 07 of art.md); for anything else it is the filename.
 
+Each picture also gets a small square-ish copy in assets/work/thumbs for the
+contact sheet, so opening a set doesn't pull every full picture.
+
 usage: python3 tools/work/catalog.py
-writes prototype/page/work.js
+writes prototype/page/work.js and assets/work/thumbs/
 """
 import json
 import os
 import re
+import shutil
 from urllib.parse import quote
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 ROOT = 'assets/work'
 LIBRARY = os.path.expanduser('~/me/vault/library')
 SETS = dict(art='art', photography='ph')    # folder -> prefix of the catalogued files
 WEB = {'.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'}
 LONG_EDGE, BYTES = 2400, 1_500_000          # past either, a picture is heavier than the page needs
+THUMBS, SHORT_EDGE = 'thumbs', 180          # contact sheet copies: a 60px cell at up to 3x
 
 
 def captions(name, prefix):
@@ -43,7 +48,10 @@ def natural(name):
 
 
 work = {}
+# The thumbs are rebuilt from the folders every run, so a removed picture takes its thumb with it.
+shutil.rmtree(f'{ROOT}/{THUMBS}', ignore_errors=True)
 for name, prefix in SETS.items():
+    os.makedirs(f'{ROOT}/{THUMBS}/{name}')
     known = captions(name, prefix)
     items = []
     for file in sorted(os.listdir(f'{ROOT}/{name}'), key=natural):
@@ -54,18 +62,21 @@ for name, prefix in SETS.items():
         if ext.lower() not in WEB:
             print(f'  skipped {path}: browsers do not show {ext or "this"} files, export a jpg')
             continue
+        thumb = f'{THUMBS}/{name}/{stem}.jpg'
         try:
             with Image.open(path) as im:
-                w, h = im.size
                 # Phones store some pictures sideways and say so in the EXIF; browsers turn them back.
-                if im.getexif().get(0x0112) in (5, 6, 7, 8):
-                    w, h = h, w
+                im = ImageOps.exif_transpose(im)
+                w, h = im.size
+                small = im.convert('RGB')
+                small.thumbnail((SHORT_EDGE * max(1, w / h), SHORT_EDGE * max(1, h / w)))
+                small.save(f'{ROOT}/{thumb}', quality=78)
         except OSError:
             print(f'  skipped {path}: could not read it as a picture')
             continue
         if max(w, h) > LONG_EDGE or os.path.getsize(path) > BYTES:
             print(f'  heavy   {path}: {w}x{h}, {os.path.getsize(path) / 1e6:.1f} MB, worth exporting smaller')
-        items.append(dict(src=quote(f'{name}/{file}'), w=w, h=h, caption=known.get(stem) or re.sub(r'[-_]+', ' ', stem)))
+        items.append(dict(src=quote(f'{name}/{file}'), thumb=quote(thumb), w=w, h=h, caption=known.get(stem) or re.sub(r'[-_]+', ' ', stem)))
     work[name] = items
     print(f'{name}: {len(items)}')
 
